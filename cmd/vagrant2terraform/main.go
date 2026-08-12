@@ -49,7 +49,7 @@ func convertVagrantfileToHCL(vagrantfile string) string {
   required_providers {
     virtualbox = {
       source  = "kumar1236/virtualbox"
-      version = "~> 2.0"
+      version = "~> 2.1"
     }
   }
 }

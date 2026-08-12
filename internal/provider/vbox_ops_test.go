@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"fmt"
 	"os"
 	"runtime"
 	"testing"
@@ -15,8 +16,10 @@ memory=1024
 vram=20
 VMState="running"
 nic1="nat"
+nictype1="82545EM"
 macaddress1="080027AABBCC"
 nic2="hostonly"
+nictype2="82545EM"
 hostonlyadapter2="vboxnet0"
 macaddress2="080027DDEEFF"
 boot1="disk"
@@ -60,6 +63,9 @@ CfgFile="C:\\VirtualBox VMs\\test-vm\\test-vm.vbox"
 	if m.NICs[0].MacAddr != "080027AABBCC" {
 		t.Errorf("expected MAC 080027AABBCC, got %q", m.NICs[0].MacAddr)
 	}
+	if m.NICs[0].Hardware != IntelPro1000MTServer {
+		t.Errorf("expected IntelPro1000MTServer, got %q", m.NICs[0].Hardware)
+	}
 	if m.NICs[1].Network != NICNetHostonly {
 		t.Errorf("expected NIC 1 hostonly, got %q", m.NICs[1].Network)
 	}
@@ -94,6 +100,43 @@ func TestParseMachineInfo_AllStates(t *testing.T) {
 			}
 			if m.State != tt.expected {
 				t.Errorf("state %q: expected %q, got %q", tt.state, tt.expected, m.State)
+			}
+		})
+	}
+}
+
+func TestIsMachineNotFound(t *testing.T) {
+	tests := []struct {
+		name     string
+		stdout   string
+		stderr   string
+		err      error
+		expected bool
+	}{
+		{
+			name:     "VirtualBox object-not-found code",
+			stderr:   "Details: code VBOX_E_OBJECT_NOT_FOUND (0x80bb0001)",
+			err:      fmt.Errorf("exit status 1"),
+			expected: true,
+		},
+		{
+			name:     "registered machine message",
+			stderr:   "Could not find a registered machine named 'missing'",
+			err:      fmt.Errorf("exit status 1"),
+			expected: true,
+		},
+		{
+			name:     "unrelated VBoxManage failure",
+			stderr:   "permission denied",
+			err:      fmt.Errorf("exit status 1"),
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isMachineNotFound(tt.stdout, tt.stderr, tt.err); got != tt.expected {
+				t.Fatalf("isMachineNotFound() = %v, want %v", got, tt.expected)
 			}
 		})
 	}

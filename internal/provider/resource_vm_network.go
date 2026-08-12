@@ -165,10 +165,6 @@ func applyNICSettings(ctx context.Context, vmUUID string, d *schema.ResourceData
 				}
 			}
 
-			// Port forwarding rules - first delete all existing, then add new
-			// Delete existing rules (ignore errors as there may be none)
-			vboxRun(ctx, "modifyvm", vmUUID, fmt.Sprintf("--natpf%d", nicIdx), "delete", "all") //nolint:errcheck
-
 			pfCount := d.Get(fmt.Sprintf("network_adapter.%d.port_forwarding.#", i)).(int)
 			for j := 0; j < pfCount; j++ {
 				pfPrefix := fmt.Sprintf("network_adapter.%d.port_forwarding.%d.", i, j)
@@ -182,6 +178,12 @@ func applyNICSettings(ctx context.Context, vmUUID string, d *schema.ResourceData
 				rule := fmt.Sprintf("%s,%s,%s,%d,%s,%d",
 					ruleName, protocol, hostIP, hostPort, guestIP, guestPort)
 
+				// VBoxManage has no "delete all" operation for NAT forwarding.
+				// Delete this rule by name first so updates are idempotent; ignore
+				// the error when the rule does not exist yet.
+				vboxRun(ctx, "modifyvm", vmUUID,
+					fmt.Sprintf("--natpf%d", nicIdx), "delete", ruleName) //nolint:errcheck
+
 				if _, _, err := vboxRun(ctx, "modifyvm", vmUUID,
 					fmt.Sprintf("--natpf%d", nicIdx), rule); err != nil {
 					return fmt.Errorf("failed to add port forwarding rule %q on NIC %d: %w", ruleName, i, err)
@@ -194,6 +196,19 @@ func applyNICSettings(ctx context.Context, vmUUID string, d *schema.ResourceData
 }
 
 func netVboxToTf(vm *Machine, d *schema.ResourceData) error {
+	preserveConfiguredSettings := func(index int, out map[string]any) {
+		prefix := fmt.Sprintf("network_adapter.%d.", index)
+		for _, field := range []string{
+			"port_forwarding",
+			"promiscuous_mode",
+			"cable_connected",
+			"nat_dns_host_resolver",
+			"nat_dns_proxy",
+		} {
+			out[field] = d.Get(prefix + field)
+		}
+	}
+
 	vboxToTfNetworkType := func(netType NICNetwork) string {
 		switch netType {
 		case NICNetBridged:
@@ -242,7 +257,7 @@ func netVboxToTf(vm *Machine, d *schema.ResourceData) error {
 		if nicCount < len(vm.NICs) {
 			// Not enough guest info available — use config-only data
 			nics := make([]map[string]any, 0, len(vm.NICs))
-			for _, nic := range vm.NICs {
+			for i, nic := range vm.NICs {
 				out := make(map[string]any)
 				out["type"] = vboxToTfNetworkType(nic.Network)
 				out["device"] = vboxToTfVdevice(nic.Hardware)
@@ -255,6 +270,7 @@ func netVboxToTf(vm *Machine, d *schema.ResourceData) error {
 				out["status"] = "unknown"
 				out["ipv4_address"] = ""
 				out["ipv4_address_available"] = "no"
+				preserveConfiguredSettings(i, out)
 				nics = append(nics, out)
 			}
 			if err := d.Set("network_adapter", nics); err != nil {
@@ -317,7 +333,7 @@ func netVboxToTf(vm *Machine, d *schema.ResourceData) error {
 		// Assign NIC property to vbox structure and Terraform
 		nics := make([]map[string]any, 0, 1)
 
-		for _, nic := range vm.NICs {
+		for i, nic := range vm.NICs {
 			out := make(map[string]any)
 
 			out["type"] = vboxToTfNetworkType(nic.Network)
@@ -340,6 +356,7 @@ func netVboxToTf(vm *Machine, d *schema.ResourceData) error {
 			} else {
 				out["ipv4_address_available"] = "yes"
 			}
+			preserveConfiguredSettings(i, out)
 
 			nics = append(nics, out)
 		}
@@ -353,7 +370,7 @@ func netVboxToTf(vm *Machine, d *schema.ResourceData) error {
 		// Assign NIC property to vbox structure and Terraform
 		nics := make([]map[string]any, 0, 1)
 
-		for _, nic := range vm.NICs {
+		for i, nic := range vm.NICs {
 			out := make(map[string]any)
 
 			out["type"] = vboxToTfNetworkType(nic.Network)
@@ -368,6 +385,7 @@ func netVboxToTf(vm *Machine, d *schema.ResourceData) error {
 			out["status"] = "down"
 			out["ipv4_address"] = ""
 			out["ipv4_address_available"] = "no"
+			preserveConfiguredSettings(i, out)
 
 			nics = append(nics, out)
 		}

@@ -10,10 +10,8 @@ import (
 	"os/user"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 
-	humanize "github.com/dustin/go-humanize"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -537,9 +535,7 @@ func resourceVMRead(ctx context.Context, d *schema.ResourceData, meta any) diag.
 	if err != nil {
 		return diag.Errorf("can't set cpus: %v", err)
 	}
-	bytes := uint64(vm.Memory) * humanize.MiByte
-	repr := humanize.IBytes(bytes)
-	err = d.Set("memory", strings.ToLower(strings.ReplaceAll(repr, " ", "")))
+	err = d.Set("memory", fmt.Sprintf("%dmib", vm.Memory))
 	if err != nil {
 		return diag.Errorf("can't set memory: %v", err)
 	}

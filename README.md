@@ -3,18 +3,17 @@
 # VirtualBox provider for Terraform
 
 Source and issue tracking are available in the [GitHub repository](https://github.com/kumar1236/terraform-provider-virtualbox).
+Published packages and documentation are available from the
+[Terraform Registry](https://registry.terraform.io/providers/kumar1236/virtualbox/latest/docs).
 
 ## Usage
-
-Until the provider is published in the Terraform Registry, build it locally
-and use a Terraform CLI `dev_overrides` entry as described in
-[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```tf
 terraform {
   required_providers {
     virtualbox = {
-      source = "kumar1236/virtualbox"
+      source  = "kumar1236/virtualbox"
+      version = "~> 2.1"
     }
   }
 }

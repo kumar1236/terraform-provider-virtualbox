@@ -21,7 +21,7 @@ terraform {
   required_providers {
     virtualbox = {
       source  = "kumar1236/virtualbox"
-      version = "~> 0.3.0"
+      version = "~> 2.1"
     }
   }
 }

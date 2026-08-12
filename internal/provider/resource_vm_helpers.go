@@ -72,7 +72,7 @@ func waitUntilVMIsReady(ctx context.Context, d *schema.ResourceData, vm *Machine
 			[]string{"no"},
 			key,
 			meta,
-			30*time.Second,
+			5*time.Second,
 			1*time.Second,
 		); err != nil {
 			// Timeout is not fatal — VM is running, just no IP yet
@@ -132,7 +132,7 @@ func waitForVMAttribute(ctx context.Context, d *schema.ResourceData, target []st
 		Pending:        pending,
 		Target:         target,
 		Refresh:        newVMStateRefreshFunc(ctx, d, attribute, meta),
-		Timeout:        5 * time.Minute,
+		Timeout:        45 * time.Second,
 		Delay:          delay,
 		MinTimeout:     interval,
 		NotFoundChecks: 60,

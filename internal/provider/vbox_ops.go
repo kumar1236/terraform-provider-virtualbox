@@ -67,18 +67,20 @@ var ErrMachineNotExist = fmt.Errorf("machine does not exist")
 
 // getMachine retrieves a VM by name or UUID using showvminfo --machinereadable.
 func getMachine(nameOrUUID string) (*Machine, error) {
-	stdout, _, err := vboxRun(context.Background(), "showvminfo", nameOrUUID, "--machinereadable")
+	stdout, stderr, err := vboxRun(context.Background(), "showvminfo", nameOrUUID, "--machinereadable")
 	if err != nil {
-		if strings.Contains(fmt.Sprint(err), "VBOX_E_OBJECT_NOT_FOUND") {
+		if isMachineNotFound(stdout, stderr, err) {
 			return nil, ErrMachineNotExist
 		}
-		// Also check stderr/stdout content for "not found" patterns
-		if strings.Contains(stdout, "VBOX_E_OBJECT_NOT_FOUND") {
-			return nil, ErrMachineNotExist
-		}
-		return nil, fmt.Errorf("failed to get machine %s: %w", nameOrUUID, err)
+		return nil, fmt.Errorf("failed to get machine %s: %w: %s", nameOrUUID, err, strings.TrimSpace(stderr))
 	}
 	return parseMachineInfo(stdout)
+}
+
+func isMachineNotFound(stdout string, stderr string, err error) bool {
+	message := strings.ToLower(strings.Join([]string{stdout, stderr, fmt.Sprint(err)}, "\n"))
+	return strings.Contains(message, "vbox_e_object_not_found") ||
+		strings.Contains(message, "could not find a registered machine")
 }
 
 // parseMachineInfo parses showvminfo --machinereadable output.
@@ -152,6 +154,7 @@ func parseMachineInfo(output string) (*Machine, error) {
 			nic.Network = NICNetGeneric
 		}
 		nic.MacAddr = props[fmt.Sprintf("macaddress%d", i)]
+		nic.Hardware = NICHardware(props[fmt.Sprintf("nictype%d", i)])
 		nic.HostInterface = props[fmt.Sprintf("hostonlyadapter%d", i)]
 		if nic.HostInterface == "" {
 			nic.HostInterface = props[fmt.Sprintf("bridgeadapter%d", i)]
