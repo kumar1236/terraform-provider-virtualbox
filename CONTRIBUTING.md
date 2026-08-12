@@ -1,56 +1,41 @@
-# How to build from source
+# Contributing
 
-1. `git clone git@github.com:terra-farm/terraform-provider-virtualbox.git`
-1. `cd terraform-provider-virtualbox`
-1. `go build`
-1. `mv terraform-provider-virtualbox examples/`
-1. `cd examples/`
-1. `terraform init`
-1. `terraform plan`
-1. `terraform apply`
+## Build from source
 
-# Debugging
-
-If terraform still uses the preinstalled version you can try to move the binary to the explicit plugins folder, as mentioned in the [official terraform documentation](https://developer.hashicorp.com/terraform/plugin/debugging) or in a [terraform tutorial](https://developer.hashicorp.com/terraform/tutorials/providers/provider-debug):
 ```bash
-mv terraform-provider-virtualbox ~/.terraform.d/plugins/registry.local/local/virtualbox/5.0.0/linux_amd64/terraform-provider-virtualbox_v5.0.0
+git clone git@github.com:kumar1236/terraform-provider-virtualbox.git
+cd terraform-provider-virtualbox
+go test ./...
+go build -o bin/terraform-provider-virtualbox .
 ```
-If you don't want to move the binary all the time you could also use a symbolic link instead:
-```bash
-ln -s terraform-provider-virtualbox ~/.terraform.d/plugins/registry.local/local/virtualbox/5.0.0/linux_amd64/terraform-provider-virtualbox_v5.0.0
-```
-You'll have to change the provider in your terraform configuration too:
-```terraform
-terraform {
-  required_providers {
-    virtualbox = {
-      source = "registry.local/local/virtualbox",
-      version = "5.0.0"
-    }
+
+On Windows, use `bin/terraform-provider-virtualbox.exe` as the output path.
+
+## Test a local build
+
+Create a Terraform CLI configuration file such as `dev.tfrc`:
+
+```hcl
+provider_installation {
+  dev_overrides {
+    "kumar1236/virtualbox" = "/absolute/path/to/terraform-provider-virtualbox/bin"
   }
+
+  direct {}
 }
 ```
-Setting the `TF_LOG` environment variable to `DEBUG` can also help investigating erros, you can read the [official terraform documentation](https://developer.hashicorp.com/terraform/internals/debugging) for more details.
 
-# Adding documentation
+Set `TF_CLI_CONFIG_FILE` to that file and run `terraform plan` or
+`terraform apply`. The provider source in Terraform configurations must be
+`kumar1236/virtualbox`.
 
-The website is hosted by the official [Terraform Registry](https://registry.terraform.io/providers/terra-farm/virtualbox/latest/docs).
-The source for the documentation is located in the `/website` directory. It follows the standard provider
-documentation format.
+## Documentation
 
-# Ask the community
+Provider documentation is stored in `docs/` using the Terraform Registry
+documentation layout.
 
-If you have a change which you think will benefit the project, ask. This can be either done as a new issue, or by creating a PR with the changes included.
+## Releases
 
-# Creating a release
-
-To create a new release for the Terraform Registry, a maintainer only needs to create a new release
-in the [Github UI](https://github.com/terra-farm/terraform-provider-virtualbox/releases/new).
-
-This will automatically publish the release to the Terraform Registry assuming the `release` Github
-Action passes.
-
-## Updating signing certificate
-
-Please follow the [GPG Signing Key](https://learn.hashicorp.com/tutorials/terraform/provider-release-publish?in=terraform/providers#generate-gpg-signing-key)
-guide in the official Terraform Documentation. We try to follow the recommended guides as closely as possible.
+Push a semantic-version tag such as `v1.0.0`. The release workflow builds and
+signs provider packages for the Terraform Registry. Repository secrets for the
+GPG private key and passphrase must be configured before publishing a release.

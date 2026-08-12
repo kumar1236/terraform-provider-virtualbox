@@ -1,6 +1,6 @@
 provider_installation {
   dev_overrides {
-    "eran132/virtualbox" = "C:/Users/eranmar/go/bin"
+    "kumar1236/virtualbox" = "C:/Users/kumar/Documents/Home-Lab/vbox/terraform-provider-virtualbox/bin"
   }
   direct {}
 }

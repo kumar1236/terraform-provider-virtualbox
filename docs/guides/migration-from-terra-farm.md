@@ -2,12 +2,12 @@
 page_title: "Migrating from terra-farm/virtualbox"
 subcategory: "Guides"
 description: |-
-  Guide for migrating from the terra-farm/virtualbox provider to eran132/vbox.
+  Guide for migrating from the terra-farm/virtualbox provider to kumar1236/virtualbox.
 ---
 
 # Migrating from terra-farm/virtualbox
 
-This guide helps you migrate from the discontinued `terra-farm/virtualbox` provider to `eran132/vbox`.
+This guide helps you migrate from the discontinued `terra-farm/virtualbox` provider to `kumar1236/virtualbox`.
 
 ## Step 1: Update Provider Source
 
@@ -24,11 +24,11 @@ terraform {
   }
 }
 
-# After (eran132)
+# After (kumar1236)
 terraform {
   required_providers {
     virtualbox = {
-      source  = "eran132/vbox"
+      source  = "kumar1236/virtualbox"
       version = "~> 1.0"
     }
   }
@@ -40,14 +40,14 @@ terraform {
 Replace the provider in your Terraform state:
 
 ```bash
-terraform state replace-provider terra-farm/virtualbox eran132/vbox
+terraform state replace-provider terra-farm/virtualbox kumar1236/virtualbox
 ```
 
 ## Step 3: Review Configuration
 
 All resource names remain the same (`virtualbox_vm`, etc.). New default values match the old hardcoded values, so existing configurations should work without changes:
 
-| Attribute | terra-farm (hardcoded) | eran132/vbox (default) |
+| Attribute | terra-farm (hardcoded) | kumar1236/virtualbox (default) |
 |-----------|----------------------|----------------------|
 | `os_type` | `Linux_64` | `Linux_64` |
 | `vram` | `20` | `20` |
@@ -76,5 +76,5 @@ You now have access to 30+ new attributes on `virtualbox_vm`, plus 4 new resourc
 
 ## Getting Help
 
-- [GitHub Issues](https://github.com/eran132/terraform-provider-vbox/issues)
-- [Provider Documentation](https://registry.terraform.io/providers/eran132/vbox/latest/docs)
+- [GitHub Issues](https://github.com/kumar1236/terraform-provider-virtualbox/issues)
+- [Provider Documentation](https://registry.terraform.io/providers/kumar1236/virtualbox/latest/docs)

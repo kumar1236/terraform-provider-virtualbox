@@ -1,7 +1,7 @@
-# CLAUDE.md - terraform-provider-vbox
+# CLAUDE.md - terraform-provider-virtualbox
 
 ## Project Overview
-Terraform provider for Oracle VirtualBox. Published as `eran132/vbox` on the Terraform Registry. Forked from `terra-farm/terraform-provider-virtualbox`. Production-grade provider with Vagrant-level feature parity.
+Terraform provider for Oracle VirtualBox. Its canonical Terraform source is `kumar1236/virtualbox`, and its repository is `github.com/kumar1236/terraform-provider-virtualbox`. Production-grade provider with Vagrant-level feature parity.
 
 ## Build & Test Commands
 ```bash
@@ -17,8 +17,8 @@ make testacc       # Acceptance tests (requires TF_ACC=1 and VirtualBox)
 ## Architecture
 - **Language**: Go 1.25+
 - **Frameworks**: Terraform Plugin SDK v2 + Plugin Framework v1.19 (via terraform-plugin-mux)
-- **VBoxManage interaction**: Custom command layer (`internal/vboxmanage/`) + `terra-farm/go-virtualbox`
-- **Entry point**: `main.go` — mux server at `registry.terraform.io/eran132/vbox`
+- **VBoxManage interaction**: Custom command layer (`internal/vboxmanage/`)
+- **Entry point**: `main.go` — mux server at `registry.terraform.io/kumar1236/virtualbox`
 - **Provider code**: `internal/provider/` (15+ Go files)
 - **VBoxManage wrappers**: `internal/vboxmanage/` (13 Go files)
 
@@ -83,7 +83,7 @@ internal/
 ## CI/CD
 - GitHub Actions: lint (golangci-lint v6) + build matrix (Ubuntu/Windows/macOS, Go 1.22/1.23)
 - GoReleaser v6 for cross-platform releases with GPG signing (crazy-max/ghaction-import-gpg@v6)
-- Registry: `eran132/vbox`
+- Registry: `kumar1236/virtualbox`
 
 ## License
-MIT (original copyright 2016 ccll, 2026 eran132)
+MIT (original copyright 2016 ccll; subsequent contributors are retained in LICENSE)

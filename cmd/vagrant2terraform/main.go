@@ -10,7 +10,7 @@ import (
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "Usage: vagrant2terraform <Vagrantfile> [output.tf]\n")
-		fmt.Fprintf(os.Stderr, "\nConverts a Vagrantfile to Terraform HCL for the eran132/vbox provider.\n")
+		fmt.Fprintf(os.Stderr, "\nConverts a Vagrantfile to Terraform HCL for the kumar1236/virtualbox provider.\n")
 		os.Exit(1)
 	}
 
@@ -48,7 +48,7 @@ func convertVagrantfileToHCL(vagrantfile string) string {
 	sb.WriteString(`terraform {
   required_providers {
     virtualbox = {
-      source  = "eran132/vbox"
+      source  = "kumar1236/virtualbox"
       version = "~> 2.0"
     }
   }

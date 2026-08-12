@@ -96,15 +96,10 @@ func resourceVMCreate(ctx context.Context, d *schema.ResourceData, meta any) dia
 			}
 		}
 
-		// Start the VM
-		if err := startVM(ctx, d, vm); err != nil {
-			return diag.Errorf("unable to start VM: %v", err)
-		}
-
 		d.SetId(vm.UUID)
 
-		if err := waitUntilVMIsReady(ctx, d, vm, meta); err != nil {
-			return diag.Errorf("failed to wait until VM is ready: %v", err)
+		if err := applyDesiredPowerState(ctx, d, vm, meta); err != nil {
+			return diag.Errorf("unable to apply desired VM power state: %v", err)
 		}
 
 		return resourceVMRead(ctx, d, meta)
@@ -166,21 +161,21 @@ func resourceVMCreate(ctx context.Context, d *schema.ResourceData, meta any) dia
 				return diag.Errorf("unable to set nested HW virtualization: %v", err)
 			}
 		}
+		if userData := d.Get("user_data").(string); userData != "" {
+			if err := applyUserData(ctx, vm.UUID, userData); err != nil {
+				return diag.Errorf("unable to set user data: %v", err)
+			}
+		}
 		if customizations, ok := d.GetOk("customize"); ok {
 			if err := executeCustomizations(ctx, vm.UUID, customizations.([]any)); err != nil {
 				return diag.Errorf("customize commands failed: %v", err)
 			}
 		}
 
-		// Start the VM
-		if err := startVM(ctx, d, vm); err != nil {
-			return diag.Errorf("unable to start VM: %v", err)
-		}
-
 		d.SetId(vm.UUID)
 
-		if err := waitUntilVMIsReady(ctx, d, vm, meta); err != nil {
-			return diag.Errorf("failed to wait until VM is ready: %v", err)
+		if err := applyDesiredPowerState(ctx, d, vm, meta); err != nil {
+			return diag.Errorf("unable to apply desired VM power state: %v", err)
 		}
 
 		return resourceVMRead(ctx, d, meta)
@@ -478,19 +473,14 @@ func resourceVMCreate(ctx context.Context, d *schema.ResourceData, meta any) dia
 		}
 	}
 
-	// Start the VM
-	if err := startVM(ctx, d, vm); err != nil {
-		return diag.Errorf("unable to start VM: %v", err)
-	}
-
 	// Assign VM ID
 	tflog.Debug(ctx, "resource ID", map[string]any{
 		"uuid": vm.UUID,
 	})
 	d.SetId(vm.UUID)
 
-	if err := waitUntilVMIsReady(ctx, d, vm, meta); err != nil {
-		return diag.Errorf("failed to wait until VM is ready: %v", err)
+	if err := applyDesiredPowerState(ctx, d, vm, meta); err != nil {
+		return diag.Errorf("unable to apply desired VM power state: %v", err)
 	}
 
 	// Errors here are already logged.
@@ -684,8 +674,8 @@ func resourceVMUpdate(ctx context.Context, d *schema.ResourceData, meta any) dia
 		}
 	}
 
-	if err := powerOnAndWait(ctx, d, vm, meta); err != nil {
-		return diag.Errorf("unable to power on and wait for VM: %v", err)
+	if err := applyDesiredPowerState(ctx, d, vm, meta); err != nil {
+		return diag.Errorf("unable to apply desired VM power state: %v", err)
 	}
 
 	// Errors are already logged

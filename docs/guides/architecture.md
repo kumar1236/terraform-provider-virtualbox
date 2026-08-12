@@ -13,7 +13,7 @@ The provider communicates with Oracle VirtualBox through the `VBoxManage` comman
 
 ```
 ┌─────────────┐     ┌──────────────────┐     ┌──────────────┐     ┌────────────┐
-│  Terraform  │────▶│  eran132/vbox    │────▶│  VBoxManage  │────▶│ VirtualBox │
+│  Terraform  │────▶│ kumar1236/virtualbox │────▶│  VBoxManage  │────▶│ VirtualBox │
 │    CLI      │     │  (Go provider)   │     │   (CLI)      │     │  Engine    │
 └─────────────┘     └──────────────────┘     └──────────────┘     └────────────┘
 ```

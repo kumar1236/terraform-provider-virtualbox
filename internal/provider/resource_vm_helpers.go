@@ -38,6 +38,23 @@ func powerOnAndWait(ctx context.Context, d *schema.ResourceData, vm *Machine, me
 	return nil
 }
 
+// applyDesiredPowerState completes VM creation/update according to the status
+// configured by Terraform. In particular, a poweroff VM must not be booted even
+// temporarily: callers may need to attach provisioning media before first boot.
+func applyDesiredPowerState(ctx context.Context, d *schema.ResourceData, vm *Machine, meta any) error {
+	switch status := d.Get("status").(string); status {
+	case "poweroff":
+		tflog.Debug(ctx, "leaving VM powered off as requested", map[string]any{
+			"vm": vm.UUID,
+		})
+		return nil
+	case "running":
+		return powerOnAndWait(ctx, d, vm, meta)
+	default:
+		return fmt.Errorf("unsupported VM status %q", status)
+	}
+}
+
 // Wait until VM is ready, and 'ready' means the first non NAT NIC get a ipv4_address assigned.
 // If the timeout is reached, the VM is still considered created — the IP may be assigned later
 // (e.g. when DHCP is configured or a static IP is set via provisioning).

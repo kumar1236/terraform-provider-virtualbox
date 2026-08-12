@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov5/tf5server"
 	"github.com/hashicorp/terraform-plugin-mux/tf5muxserver"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/terra-farm/terraform-provider-virtualbox/internal/provider"
+	"github.com/kumar1236/terraform-provider-virtualbox/internal/provider"
 )
 
 var version = "dev"
@@ -48,7 +48,7 @@ func main() {
 	}
 
 	err = tf5server.Serve(
-		"registry.terraform.io/eran132/vbox",
+		"registry.terraform.io/kumar1236/virtualbox",
 		muxServer.ProviderServer,
 		serveOpts...,
 	)

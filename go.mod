@@ -1,4 +1,4 @@
-module github.com/terra-farm/terraform-provider-virtualbox
+module github.com/kumar1236/terraform-provider-virtualbox
 
 go 1.25.0
 

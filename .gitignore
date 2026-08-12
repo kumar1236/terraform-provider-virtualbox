@@ -1,6 +1,8 @@
 .vendor
 vendor/
 dist/
+/bin/
+/.cache/
 *.sublime-workspace
 *.log
 *.tfstate*

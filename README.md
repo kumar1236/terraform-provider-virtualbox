@@ -1,23 +1,20 @@
-[![Build Status](https://github.com/terra-farm/terraform-provider-virtualbox/workflows/CI/badge.svg)](https://github.com/terra-farm/terraform-provider-virtualbox/actions?query=branch%3Amaster)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fterra-farm%2Fterraform-provider-virtualbox.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fterra-farm%2Fterraform-provider-virtualbox?ref=badge_shield)
-[![Gitter](https://badges.gitter.im/terra-farm/terraform-provider-virtualbox.svg)](https://gitter.im/terra-farm/terraform-provider-virtualbox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![CI](https://github.com/kumar1236/terraform-provider-virtualbox/actions/workflows/ci.yaml/badge.svg)](https://github.com/kumar1236/terraform-provider-virtualbox/actions/workflows/ci.yaml)
 
 # VirtualBox provider for Terraform
 
-Published documentation is located on the [Terraform Registry](https://registry.terraform.io/providers/terra-farm/virtualbox/latest/docs)
-
-## Maintainers Needed
-
-[__We are looking for additional maintainers.__](https://github.com/terra-farm/terraform-provider-virtualbox/discussions/117)
+Source and issue tracking are available in the [GitHub repository](https://github.com/kumar1236/terraform-provider-virtualbox).
 
 ## Usage
+
+Until the provider is published in the Terraform Registry, build it locally
+and use a Terraform CLI `dev_overrides` entry as described in
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```tf
 terraform {
   required_providers {
     virtualbox = {
-      source  = "eran132/vbox"
-      version = "~> 1.0"
+      source = "kumar1236/virtualbox"
     }
   }
 }
@@ -62,4 +59,5 @@ Special thanks to all contributors, and [@ccll](https://github.com/ccll) for don
 Inspired by [terraform-provider-vix](https://github.com/hooklift/terraform-provider-vix)
 
 ## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fterra-farm%2Fterraform-provider-virtualbox.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fterra-farm%2Fterraform-provider-virtualbox?ref=badge_large)
+
+MIT. See [LICENSE](LICENSE).

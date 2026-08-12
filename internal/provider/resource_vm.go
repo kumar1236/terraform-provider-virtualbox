@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 var (
@@ -72,9 +73,10 @@ func resourceVM() *schema.Resource {
 			},
 
 			"status": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "running",
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "running",
+				ValidateFunc: validation.StringInSlice([]string{"running", "poweroff"}, false),
 			},
 
 			"user_data": {
@@ -501,9 +503,9 @@ func resourceVM() *schema.Resource {
 			},
 
 			"serial_port": {
-				Type:     schema.TypeList,
-				Optional: true,
-				MaxItems: 4,
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    4,
 				Description: "Serial port configuration (up to 4 ports)",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{

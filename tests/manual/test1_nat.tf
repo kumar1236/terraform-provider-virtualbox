@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     virtualbox = {
-      source = "eran132/virtualbox"
+      source = "kumar1236/virtualbox"
     }
   }
 }
